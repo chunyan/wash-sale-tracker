@@ -134,7 +134,7 @@ class Lot(object):
     __repl__ = __str__
 
     def str_data(self):
-        return ['{:d}'.format(self.num_shares),
+        return ['{:.2f}'.format(self.num_shares),
                 '{}'.format(self.symbol),
                 '{}'.format(self.description),
                 '{}'.format(self.buy_date),
@@ -457,10 +457,10 @@ class Lots(object):
             A Lots object
         """
 
-        def convert_to_int(value):
+        def convert_to_num(value):  # TODO: support float
             if value:
-                return int(value)
-            return 0
+                return float(value.replace(',', ''))
+            return 0.0
 
         def convert_to_date(value):
             if value:
@@ -483,18 +483,18 @@ class Lots(object):
             raise BadHeadersError(str(header_row) + str(Lots.HEADERS))
         lots = []
         for row in reader:
-            row['num_shares'] = convert_to_int(row['num_shares'])
+            row['num_shares'] = convert_to_num(row['num_shares'])
             row['buy_date'] = convert_to_date(row['buy_date'])
             row['adjusted_buy_date'] = convert_to_date(row['adjusted_buy_date'])
             if not row['adjusted_buy_date']:
                 row['adjusted_buy_date'] = copy.deepcopy(row['buy_date'])
-            row['basis'] = convert_to_int(row['basis'])
-            row['adjusted_basis'] = convert_to_int(row['adjusted_basis'])
+            row['basis'] = convert_to_num(row['basis'])
+            row['adjusted_basis'] = convert_to_num(row['adjusted_basis'])
             if not row['adjusted_basis']:
                 row['adjusted_basis'] = row['basis']
             row['sell_date'] = convert_to_date(row['sell_date'])
-            row['proceeds'] = convert_to_int(row['proceeds'])
-            row['adjustment'] = convert_to_int(row['adjustment'])
+            row['proceeds'] = convert_to_num(row['proceeds'])
+            row['adjustment'] = convert_to_num(row['adjustment'])
             row['replacement_for'] = convert_to_string_list(row[
                 'replacement_for'])
             row['is_replacement'] = convert_to_bool(row['is_replacement'])
